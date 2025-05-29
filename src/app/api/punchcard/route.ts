@@ -138,6 +138,16 @@ export async function GET(request: Request) {
   <text x="30" y="${7 * cellSize + 165}" class="summary-text">Weekday: <tspan class="summary-highlight">${weekdayPercentage}%</tspan> vs Weekend: <tspan class="summary-highlight">${weekendPercentage}%</tspan></text>
   <text x="30" y="${7 * cellSize + 185}" class="summary-text">Time: Morning ${Math.round((morningCommits/totalCommits)*100)}% · Afternoon ${Math.round((afternoonCommits/totalCommits)*100)}% · Evening ${Math.round((eveningCommits/totalCommits)*100)}% · Night ${Math.round((nightCommits/totalCommits)*100)}%</text>
   <text x="${width - 30}" y="${7 * cellSize + 140}" class="summary-text" text-anchor="end">Most active: <tspan class="summary-highlight">${dayNames[peakDay]} at ${peakHour}:00</tspan></text>
+
+<g transform="translate(${width - 170}, ${height - 30})">
+  <text x="0" y="12" class="label">Less</text>
+  ${['#1e2937', '#4299e1', '#667eea', '#9f7aea', '#d53f8c'].map((color, i) =>
+    `<rect x="${40 + i * 16}" y="0" width="12" height="12" fill="${color}" rx="2" ry="2" />`
+  ).join('')}
+  <text x="${40 + 5 * 16 + 10}" y="12" class="label">More</text>
+</g>
+
+
 </svg>`;
 
   return new Response(svg, {
