@@ -2,6 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import toast from 'react-hot-toast';
+import { Github , Globe} from "lucide-react"
+import Link from 'next/link';
+
+
 
 export default function PunchCardPage() {
   const [username, setUsername] = useState('aliasgarsogiawala');
@@ -27,7 +32,7 @@ export default function PunchCardPage() {
       initial={{ opacity: 0 }} 
       animate={{ opacity: 1 }} 
       transition={{ duration: 0.5 }}
-      className="min-h-screen bg-[#e6f0ff] text-blue-900 px-6 py-10 font-sans"
+      className="min-h-screen bg-[#e6f0ff] text-blue-900 px-6 py-10 font-sans overflow-x-auto relative"
     >
       <div className="max-w-4xl mx-auto">
         <motion.div
@@ -134,17 +139,69 @@ export default function PunchCardPage() {
           </motion.div>
         )}
         {svgUrl && !loading && (
-  <div className="mt-6 bg-white border border-blue-200 rounded-md p-4 shadow-sm">
-    <h3 className="font-semibold text-blue-900 mb-2">📎 Embed in Your GitHub README</h3>
-    <p className="text-sm text-gray-700 mb-2">Copy and paste this into your README.md:</p>
-    <pre className="bg-blue-50 text-sm text-blue-900 p-3 rounded font-mono overflow-x-auto">
-      <code>
-        {`![GitHub Punch Card](https://punchcardwidget.vercel.app/api/punchcard?user=${username})`}
-      </code>
-    </pre>
-  </div>
+  
+    <div className="relative mt-8 bg-blue-50 border border-blue-200 rounded-md p-4 shadow-sm">
+  {/* Copy button outside the code */}
+  <button
+    onClick={() =>{
+      navigator.clipboard.writeText(
+        `![GitHub Punch Card](https://punchcardwidget.vercel.app/api/punchcard?user=${username})`
+      );
+      toast.success('Copied to clipboard!');
+    }}
+    
+    className="absolute top-2 right-2 bg-blue-200 hover:bg-blue-300 text-blue-900 py-1 px-2 rounded text-xs shadow-sm transition"
+  >
+    📋 Copy
+  </button>
+
+  <h3 className="font-semibold text-blue-900 mb-2">📎 Embed in Your GitHub README</h3>
+  <p className="text-sm text-gray-700 mb-2">Copy and paste this into your README.md:</p>
+
+  <pre className="text-sm text-blue-900 p-3 rounded font-mono overflow-x-auto bg-white border border-blue-100">
+    <code>
+      {`![GitHub Punch Card](https://punchcardwidget.vercel.app/api/punchcard?user=${username})`}
+    </code>
+  </pre>
+</div>
+
+  
 )}
       </div>
+      <div className="mt-12 bg-white shadow-lg rounded-xl overflow-hidden border border-gray-200 max-w-xl mx-auto">
+  <div className="flex items-center p-4">
+    <img
+      src="https://github.com/aliasgarsogiawala.png"
+      alt="Aliasgar"
+      className="w-16 h-16 rounded-full border border-gray-300"
+    />
+    <div className="ml-4">
+      <h3 className="text-lg font-semibold text-gray-800">👨‍💻 Aliasgar Sogiawala</h3>
+      <p className="text-sm text-gray-500">Creator of GitHub Punch Card • Building tools for devs</p>
+      <div className="flex space-x-3 mt-2 text-sm">
+        
+        <Link
+                href="https://github.com/aliasgarsogiawala"
+                target="_blank"
+                className="text-blue-600"
+              >
+                <Github className="h-4 w-4" />
+                
+        </Link>
+        <Link
+                href="https://aliasgar.vercel.app"
+                target="_blank"
+                className="text-blue-600"
+              >
+                <Globe className="h-4 w-4" />
+                
+        </Link>
+      </div>
+    </div>
+  </div>
+</div>
+
     </motion.main>
+  
   );
 }
