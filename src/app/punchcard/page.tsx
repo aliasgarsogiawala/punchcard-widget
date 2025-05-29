@@ -139,7 +139,7 @@ export default function PunchCardPage() {
     <p className="text-sm text-gray-700 mb-2">Copy and paste this into your README.md:</p>
     <pre className="bg-blue-50 text-sm text-blue-900 p-3 rounded font-mono overflow-x-auto">
       <code>
-        {`![GitHub Punch Card](https://yourdomain.com/api/punchcard?user=${username})`}
+        {`![GitHub Punch Card](https://punchcardwidget.vercel.app/api/punchcard?user=${username})`}
       </code>
     </pre>
   </div>
