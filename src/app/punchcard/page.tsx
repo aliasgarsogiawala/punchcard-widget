@@ -121,7 +121,7 @@ export default function PunchCardPage() {
           >
             <div className="bg-[#e0f2fe] p-4 rounded-lg border border-[#bae6fd] hover:border-blue-400 transition-colors duration-300">
               <h3 className="font-semibold text-blue-700 mb-2">🌙 Night Owl or Early Bird?</h3>
-              <p className="text-blue-800">See what time of day you're most productive based on your commit patterns.</p>
+              <p className="text-blue-800">See what time of day you&apos;re most productive based on your commit patterns.</p>
             </div>
             <div className="bg-[#ede9fe] p-4 rounded-lg border border-[#ddd6fe] hover:border-purple-400 transition-colors duration-300">
               <h3 className="font-semibold text-purple-700 mb-2">📅 Weekend Warrior?</h3>
@@ -133,6 +133,17 @@ export default function PunchCardPage() {
             </div>
           </motion.div>
         )}
+        {svgUrl && !loading && (
+  <div className="mt-6 bg-white border border-blue-200 rounded-md p-4 shadow-sm">
+    <h3 className="font-semibold text-blue-900 mb-2">📎 Embed in Your GitHub README</h3>
+    <p className="text-sm text-gray-700 mb-2">Copy and paste this into your README.md:</p>
+    <pre className="bg-blue-50 text-sm text-blue-900 p-3 rounded font-mono overflow-x-auto">
+      <code>
+        {`![GitHub Punch Card](https://yourdomain.com/api/punchcard?user=${username})`}
+      </code>
+    </pre>
+  </div>
+)}
       </div>
     </motion.main>
   );

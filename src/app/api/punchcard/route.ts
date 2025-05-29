@@ -21,8 +21,9 @@ export async function GET(request: Request) {
   let peakDay = 0;
   let peakHour = 0;
   let peakCount = 0;
-  let dayTotals = Array(7).fill(0);
-  let hourTotals = Array(24).fill(0);
+
+  const dayTotals = Array(7).fill(0);
+  const hourTotals = Array(24).fill(0);
 
   for (const repo of repos) {
     let data = null;
@@ -40,9 +41,10 @@ export async function GET(request: Request) {
 
       try {
         data = await res.json();
-      } catch (err) {
-        console.error(`Failed parsing punch_card for ${repo.name}`);
+      } catch {
+        // silently ignore
       }
+
       break;
     }
 
@@ -76,30 +78,30 @@ export async function GET(request: Request) {
   const nightCommits = hourTotals.slice(0, 5).reduce((a, b) => a + b, 0);
 
   const cellSize = 20;
-  const width = 24 * cellSize + 150;
+  const width = 24 * cellSize + 170;
   const height = 7 * cellSize + 220;
 
   const getColor = (count: number) => {
-    if (count === 0) return '#1e2937';
+    if (count === 0) return '#cbd5e1';
     const intensity = Math.min(1, count / maxCommits);
-    if (intensity < 0.3) return '#4299e1';
-    if (intensity < 0.6) return '#667eea';
-    if (intensity < 0.8) return '#9f7aea';
-    return '#d53f8c';
+    if (intensity < 0.3) return '#60a5fa';
+    if (intensity < 0.6) return '#818cf8';
+    if (intensity < 0.8) return '#a78bfa';
+    return '#f472b6';
   };
 
   const svg = `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
   <style>
-    .label { font: 12px sans-serif; fill: #cbd5e0; }
-    .cell { stroke: #0D1117; stroke-width: 1; }
-    .title { font: bold 20px sans-serif; fill: #58A6FF; }
-    .subtitle { font: 14px sans-serif; fill: #a0aec0; }
-    .summary-title { font: bold 16px sans-serif; fill: #e2e8f0; }
-    .summary-text { font: 14px sans-serif; fill: #a0aec0; }
-    .summary-highlight { font: bold 14px sans-serif; fill: #d6bcfa; }
+    .label { font: 12px sans-serif; fill: #1f2937; }
+    .cell { stroke: #e2e8f0; stroke-width: 1; }
+    .title { font: bold 20px sans-serif; fill: #1e3a8a; }
+    .subtitle { font: 14px sans-serif; fill: #334155; }
+    .summary-title { font: bold 16px sans-serif; fill: #1e293b; }
+    .summary-text { font: 14px sans-serif; fill: #475569; }
+    .summary-highlight { font: bold 14px sans-serif; fill: #3b82f6; }
   </style>
 
-  <rect width="100%" height="100%" fill="#0D1117" />
+  <rect width="100%" height="100%" fill="#e6f0ff" />
 
   <text x="20" y="30" class="title">GitHub Punch Card — ${username}</text>
   <text x="20" y="50" class="subtitle">Total Commits: ${totalCommits} | Peak Activity: ${dayNames[peakDay]} at ${peakHour}:00</text>
@@ -139,15 +141,13 @@ export async function GET(request: Request) {
   <text x="30" y="${7 * cellSize + 185}" class="summary-text">Time: Morning ${Math.round((morningCommits/totalCommits)*100)}% · Afternoon ${Math.round((afternoonCommits/totalCommits)*100)}% · Evening ${Math.round((eveningCommits/totalCommits)*100)}% · Night ${Math.round((nightCommits/totalCommits)*100)}%</text>
   <text x="${width - 30}" y="${7 * cellSize + 140}" class="summary-text" text-anchor="end">Most active: <tspan class="summary-highlight">${dayNames[peakDay]} at ${peakHour}:00</tspan></text>
 
-<g transform="translate(${width - 170}, ${height - 30})">
-  <text x="0" y="12" class="label">Less</text>
-  ${['#1e2937', '#4299e1', '#667eea', '#9f7aea', '#d53f8c'].map((color, i) =>
-    `<rect x="${40 + i * 16}" y="0" width="12" height="12" fill="${color}" rx="2" ry="2" />`
-  ).join('')}
-  <text x="${40 + 5 * 16 + 10}" y="12" class="label">More</text>
-</g>
-
-
+  <g transform="translate(${width - 170}, ${height - 30})">
+    <text x="0" y="12" class="label">Less</text>
+    ${['#cbd5e1', '#60a5fa', '#818cf8', '#a78bfa', '#f472b6'].map((color, i) =>
+      `<rect x="${40 + i * 16}" y="0" width="12" height="12" fill="${color}" rx="2" ry="2" />`
+    ).join('')}
+    <text x="${40 + 5 * 16 + 10}" y="12" class="label">More</text>
+  </g>
 </svg>`;
 
   return new Response(svg, {
