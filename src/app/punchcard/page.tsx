@@ -10,6 +10,7 @@ import Link from 'next/link';
 
 export default function PunchCardPage() {
   const [username, setUsername] = useState('aliasgarsogiawala');
+  const [theme, setTheme] = useState('default');
   const [svgUrl, setSvgUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
@@ -18,11 +19,17 @@ export default function PunchCardPage() {
     handleSubmit();
   }, []);
 
+  useEffect(() => {
+    if (svgUrl) {
+      handleSubmit();
+    }
+  }, [theme]);
+
   const handleSubmit = () => {
     setSvgUrl('');
     setLoading(true);
     setTimeout(() => {
-      setSvgUrl(`/api/punchcard?user=${username}`);
+      setSvgUrl(`/api/punchcard?user=${username}&theme=${theme}`);
       setLoading(false);
     }, 800);
   };
@@ -72,6 +79,20 @@ export default function PunchCardPage() {
                   Enter any public GitHub username to see their commit patterns
                 </div>
               )}
+            </div>
+          </div>
+          <div className="relative">
+            <select
+              value={theme}
+              onChange={(e) => setTheme(e.target.value)}
+              className="bg-white text-blue-900 px-4 py-3 rounded-lg border border-[#cfe0f5] focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-300 appearance-none pr-10"
+            >
+              <option value="default">🌟 Default</option>
+              <option value="dark">🌙 Dark</option>
+              <option value="aqua">🌊 Aqua</option>
+            </select>
+            <div className="absolute right-3 top-3 text-blue-500 pointer-events-none">
+              ▼
             </div>
           </div>
           <motion.button
@@ -145,7 +166,7 @@ export default function PunchCardPage() {
   <button
     onClick={() =>{
       navigator.clipboard.writeText(
-        `![GitHub Punch Card](https://punchcardwidget.vercel.app/api/punchcard?user=${username})`
+        `![GitHub Punch Card](https://punchcardwidget.vercel.app/api/punchcard?user=${username}&theme=${theme})`
       );
       toast.success('Copied to clipboard!');
     }}
@@ -160,9 +181,27 @@ export default function PunchCardPage() {
 
   <pre className="text-sm text-blue-900 p-3 rounded font-mono overflow-x-auto bg-white border border-blue-100">
     <code>
-      {`![GitHub Punch Card](https://punchcardwidget.vercel.app/api/punchcard?user=${username})`}
+      {`![GitHub Punch Card](https://punchcardwidget.vercel.app/api/punchcard?user=${username}&theme=${theme})`}
     </code>
   </pre>
+
+  <div className="mt-4">
+    <h4 className="font-semibold text-blue-900 mb-2">🎨 Available Themes</h4>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+      <div className="bg-white p-3 rounded border border-blue-100">
+        <div className="font-medium text-blue-800 mb-1">🌟 Default Theme</div>
+        <code className="text-xs text-gray-600 break-all">theme=default</code>
+      </div>
+      <div className="bg-white p-3 rounded border border-blue-100">
+        <div className="font-medium text-blue-800 mb-1">🌙 Dark Theme</div>
+        <code className="text-xs text-gray-600 break-all">theme=dark</code>
+      </div>
+      <div className="bg-white p-3 rounded border border-blue-100">
+        <div className="font-medium text-blue-800 mb-1">🌊 Aqua Theme</div>
+        <code className="text-xs text-gray-600 break-all">theme=aqua</code>
+      </div>
+    </div>
+  </div>
 </div>
 
   

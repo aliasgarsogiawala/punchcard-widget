@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const username = searchParams.get('user');
+  const theme = searchParams.get('theme') || 'default';
   if (!username) return NextResponse.json({ error: 'Missing user' }, { status: 400 });
 
   const token = process.env.GITHUB_TOKEN;
@@ -81,27 +82,63 @@ export async function GET(request: Request) {
   const width = 24 * cellSize + 170;
   const height = 7 * cellSize + 220;
 
+  // Theme configurations
+  const themes = {
+    default: {
+      background: '#e6f0ff',
+      titleColor: '#1e3a8a',
+      subtitleColor: '#334155',
+      labelColor: '#1f2937',
+      summaryTitleColor: '#1e293b',
+      summaryTextColor: '#475569',
+      summaryHighlightColor: '#3b82f6',
+      colors: ['#cbd5e1', '#60a5fa', '#818cf8', '#a78bfa', '#f472b6']
+    },
+    dark: {
+      background: '#0f172a',
+      titleColor: '#f1f5f9',
+      subtitleColor: '#cbd5e1',
+      labelColor: '#e2e8f0',
+      summaryTitleColor: '#f8fafc',
+      summaryTextColor: '#cbd5e1',
+      summaryHighlightColor: '#60a5fa',
+      colors: ['#334155', '#1e40af', '#3730a3', '#7c3aed', '#db2777']
+    },
+    aqua: {
+      background: '#ecfeff',
+      titleColor: '#155e75',
+      subtitleColor: '#0891b2',
+      labelColor: '#0f766e',
+      summaryTitleColor: '#134e4a',
+      summaryTextColor: '#0f766e',
+      summaryHighlightColor: '#0891b2',
+      colors: ['#a7f3d0', '#34d399', '#10b981', '#059669', '#047857']
+    }
+  };
+
+  const currentTheme = themes[theme as keyof typeof themes] || themes.default;
+
   const getColor = (count: number) => {
-    if (count === 0) return '#cbd5e1';
+    if (count === 0) return currentTheme.colors[0];
     const intensity = Math.min(1, count / maxCommits);
-    if (intensity < 0.3) return '#60a5fa';
-    if (intensity < 0.6) return '#818cf8';
-    if (intensity < 0.8) return '#a78bfa';
-    return '#f472b6';
+    if (intensity < 0.3) return currentTheme.colors[1];
+    if (intensity < 0.6) return currentTheme.colors[2];
+    if (intensity < 0.8) return currentTheme.colors[3];
+    return currentTheme.colors[4];
   };
 
   const svg = `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
   <style>
-    .label { font: 12px sans-serif; fill: #1f2937; }
-    .cell { stroke: #e2e8f0; stroke-width: 1; }
-    .title { font: bold 20px sans-serif; fill: #1e3a8a; }
-    .subtitle { font: 14px sans-serif; fill: #334155; }
-    .summary-title { font: bold 16px sans-serif; fill: #1e293b; }
-    .summary-text { font: 14px sans-serif; fill: #475569; }
-    .summary-highlight { font: bold 14px sans-serif; fill: #3b82f6; }
+    .label { font: 12px sans-serif; fill: ${currentTheme.labelColor}; }
+    .cell { stroke: ${theme === 'dark' ? '#475569' : '#e2e8f0'}; stroke-width: 1; }
+    .title { font: bold 20px sans-serif; fill: ${currentTheme.titleColor}; }
+    .subtitle { font: 14px sans-serif; fill: ${currentTheme.subtitleColor}; }
+    .summary-title { font: bold 16px sans-serif; fill: ${currentTheme.summaryTitleColor}; }
+    .summary-text { font: 14px sans-serif; fill: ${currentTheme.summaryTextColor}; }
+    .summary-highlight { font: bold 14px sans-serif; fill: ${currentTheme.summaryHighlightColor}; }
   </style>
 
-  <rect width="100%" height="100%" fill="#e6f0ff" />
+  <rect width="100%" height="100%" fill="${currentTheme.background}" />
 
   <text x="20" y="30" class="title">GitHub Punch Card — ${username}</text>
   <text x="20" y="50" class="subtitle">Total Commits: ${totalCommits} | Peak Activity: ${dayNames[peakDay]} at ${peakHour}:00</text>
@@ -143,7 +180,7 @@ export async function GET(request: Request) {
 
   <g transform="translate(${width - 170}, ${height - 30})">
     <text x="0" y="12" class="label">Less</text>
-    ${['#cbd5e1', '#60a5fa', '#818cf8', '#a78bfa', '#f472b6'].map((color, i) =>
+    ${currentTheme.colors.map((color, i) =>
       `<rect x="${40 + i * 16}" y="0" width="12" height="12" fill="${color}" rx="2" ry="2" />`
     ).join('')}
     <text x="${40 + 5 * 16 + 10}" y="12" class="label">More</text>
