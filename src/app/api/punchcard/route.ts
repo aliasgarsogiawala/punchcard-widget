@@ -191,6 +191,8 @@ export async function GET(request: Request) {
     ).join('')}
     <text x="${40 + 5 * 16 + 10}" y="12" class="label">More</text>
   </g>
+
+  <text x="${width - 10}" y="${height - 10}" class="number-label" text-anchor="end" opacity="0.6">Developed by Aliasgar Sogiawala</text>
 </svg>`;
 
   return new Response(svg, {
