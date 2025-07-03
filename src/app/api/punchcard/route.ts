@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 
-// Helper function to format numbers with commas for readability
 const formatNumber = (num: number) => {
   return num >= 1000 ? num.toLocaleString() : num.toString();
 };
@@ -146,8 +145,9 @@ export async function GET(request: Request) {
 
   <rect width="100%" height="100%" fill="${currentTheme.background}" />
 
-  <text x="20" y="30" class="title">GitHub Punch Card — ${username.length > 15 ? username.substring(0, 15) + '...' : username}</text>
+  <text x="20" y="30" class="title">GitHub Punch Card — ${username}</text>
   <text x="20" y="52" class="subtitle">Total Commits: ${formatNumber(totalCommits)} | Peak Activity: ${dayNames[peakDay]} at ${peakHour}:00</text>
+  <text x="${width - 10}" y="20" class="number-label" text-anchor="end" opacity="0.6">Developed by Aliasgar Sogiawala</text>
 
   ${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map((d, i) => 
     `<text x="50" y="${i * cellSize + 95}" class="label" text-anchor="end">${d}</text>
@@ -191,8 +191,6 @@ export async function GET(request: Request) {
     ).join('')}
     <text x="${40 + 5 * 16 + 10}" y="12" class="label">More</text>
   </g>
-
-  <text x="${width - 10}" y="${height - 10}" class="number-label" text-anchor="end" opacity="0.6">Developed by Aliasgar Sogiawala</text>
 </svg>`;
 
   return new Response(svg, {
