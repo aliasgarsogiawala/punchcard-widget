@@ -1,5 +1,10 @@
 import { NextResponse } from 'next/server';
 
+// Helper function to format numbers with commas for readability
+const formatNumber = (num: number) => {
+  return num >= 1000 ? num.toLocaleString() : num.toString();
+};
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const username = searchParams.get('user');
@@ -78,8 +83,8 @@ export async function GET(request: Request) {
   const eveningCommits = hourTotals.slice(18, 24).reduce((a, b) => a + b, 0);
   const nightCommits = hourTotals.slice(0, 5).reduce((a, b) => a + b, 0);
 
-  const cellSize = 20;
-  const width = 24 * cellSize + 170;
+  const cellSize = 22; // Increased from 20 to 22 for more horizontal spacing
+  const width = 24 * cellSize + 250; // Increased to 250 for much more space
   const height = 7 * cellSize + 220;
 
   // Theme configurations
@@ -130,9 +135,10 @@ export async function GET(request: Request) {
   const svg = `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
   <style>
     .label { font: 12px sans-serif; fill: ${currentTheme.labelColor}; }
+    .number-label { font: 9px sans-serif; fill: ${currentTheme.labelColor}; }
     .cell { stroke: ${theme === 'dark' ? '#475569' : '#e2e8f0'}; stroke-width: 1; }
-    .title { font: bold 20px sans-serif; fill: ${currentTheme.titleColor}; }
-    .subtitle { font: 14px sans-serif; fill: ${currentTheme.subtitleColor}; }
+    .title { font: bold 18px sans-serif; fill: ${currentTheme.titleColor}; }
+    .subtitle { font: 13px sans-serif; fill: ${currentTheme.subtitleColor}; }
     .summary-title { font: bold 16px sans-serif; fill: ${currentTheme.summaryTitleColor}; }
     .summary-text { font: 14px sans-serif; fill: ${currentTheme.summaryTextColor}; }
     .summary-highlight { font: bold 14px sans-serif; fill: ${currentTheme.summaryHighlightColor}; }
@@ -140,17 +146,17 @@ export async function GET(request: Request) {
 
   <rect width="100%" height="100%" fill="${currentTheme.background}" />
 
-  <text x="20" y="30" class="title">GitHub Punch Card — ${username}</text>
-  <text x="20" y="50" class="subtitle">Total Commits: ${totalCommits} | Peak Activity: ${dayNames[peakDay]} at ${peakHour}:00</text>
+  <text x="20" y="30" class="title">GitHub Punch Card — ${username.length > 15 ? username.substring(0, 15) + '...' : username}</text>
+  <text x="20" y="52" class="subtitle">Total Commits: ${formatNumber(totalCommits)} | Peak Activity: ${dayNames[peakDay]} at ${peakHour}:00</text>
 
   ${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map((d, i) => 
-    `<text x="40" y="${i * cellSize + 95}" class="label" text-anchor="end">${d}</text>
-     <text x="${24 * cellSize + 70}" y="${i * cellSize + 95}" class="label">${dayTotals[i]}</text>`
+    `<text x="50" y="${i * cellSize + 95}" class="label" text-anchor="end">${d}</text>
+     <text x="${24 * cellSize + 90}" y="${i * cellSize + 95}" class="number-label">${formatNumber(dayTotals[i])}</text>`
   ).join('')}
 
   ${Array.from({ length: 24 }).map((_, h) => 
-    `<text x="${h * cellSize + 70}" y="70" class="label" text-anchor="middle">${h}</text>
-     <text x="${h * cellSize + 70}" y="${7 * cellSize + 100}" class="label" text-anchor="middle">${hourTotals[h]}</text>`
+    `<text x="${h * cellSize + 82}" y="70" class="label" text-anchor="middle">${h}</text>
+     <text x="${h * cellSize + 82}" y="${7 * cellSize + 100}" class="number-label" text-anchor="middle">${formatNumber(hourTotals[h])}</text>`
   ).join('')}
 
   ${Array.from({ length: 7 }).map((_, day) => `
@@ -159,7 +165,7 @@ export async function GET(request: Request) {
       const color = getColor(count);
       return `<g>
         <rect 
-          x="${hour * cellSize + 60}" 
+          x="${hour * cellSize + 70}" 
           y="${day * cellSize + 80}" 
           width="${cellSize - 2}" 
           height="${cellSize - 2}" 
@@ -178,7 +184,7 @@ export async function GET(request: Request) {
   <text x="30" y="${7 * cellSize + 185}" class="summary-text">Time: Morning ${Math.round((morningCommits/totalCommits)*100)}% · Afternoon ${Math.round((afternoonCommits/totalCommits)*100)}% · Evening ${Math.round((eveningCommits/totalCommits)*100)}% · Night ${Math.round((nightCommits/totalCommits)*100)}%</text>
   <text x="${width - 30}" y="${7 * cellSize + 140}" class="summary-text" text-anchor="end">Most active: <tspan class="summary-highlight">${dayNames[peakDay]} at ${peakHour}:00</tspan></text>
 
-  <g transform="translate(${width - 170}, ${height - 30})">
+  <g transform="translate(${width - 200}, ${height - 30})">
     <text x="0" y="12" class="label">Less</text>
     ${currentTheme.colors.map((color, i) =>
       `<rect x="${40 + i * 16}" y="0" width="12" height="12" fill="${color}" rx="2" ry="2" />`
